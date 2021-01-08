@@ -13,6 +13,8 @@ https://gist.github.com/TheRayTracer/dd12c498e3ecb9b8b47f#file-clock-py
 import math
 import time
 import datetime
+import pygame
+from pygame.locals import *
 from demo_opts import get_device
 from luma.core.render import canvas
 from PIL import ImageFont
@@ -28,12 +30,24 @@ fontBold = ImageFont.truetype("fonts/Dot Matrix Bold.ttf", 10)
 fontBoldTall = ImageFont.truetype("fonts/Dot Matrix Bold Tall.ttf", 10)
 fontBoldLarge = ImageFont.truetype("fonts/Dot Matrix Bold.ttf", 20)
 
+pygame.init()
+print("Test")
+
 def main():
     today_last_time = "Unknown"
     while True:
         now = datetime.datetime.now()
         today_date = now.strftime("%d %b %y")
         today_time = now.strftime("%H:%M:%S")
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                break
+
+        pressed_keys = pygame.key.get_pressed()
+        if pressed_keys[pygame.K_p]:
+            print('You Pressed A Key!')
+
         if today_time != today_last_time:
             today_last_time = today_time
             with canvas(device) as draw:
