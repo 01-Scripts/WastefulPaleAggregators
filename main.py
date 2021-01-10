@@ -25,16 +25,19 @@ def posn(angle, arm_length):
     dy = int(math.sin(math.radians(angle)) * arm_length)
     return (dx, dy)
 
-font = ImageFont.truetype("fonts/Dot Matrix Regular.ttf", 10)
-fontBold = ImageFont.truetype("fonts/Dot Matrix Bold.ttf", 10)
-fontBoldTall = ImageFont.truetype("fonts/Dot Matrix Bold Tall.ttf", 10)
+font = ImageFont.truetype("fonts/Dot Matrix Regular.ttf", 12)
+fontBold = ImageFont.truetype("fonts/Dot Matrix Bold.ttf", 12)
+fontBoldTall = ImageFont.truetype("fonts/Dot Matrix Bold Tall.ttf", 12)
 fontBoldLarge = ImageFont.truetype("fonts/Dot Matrix Bold.ttf", 20)
 
 pygame.init()
 print("Test")
 
+max_line = 4
+
 def main():
     today_last_time = "Unknown"
+    sel_line = 0
     while True:
         now = datetime.datetime.now()
         today_date = now.strftime("%d %b %y")
@@ -46,38 +49,40 @@ def main():
 
         pressed_keys = pygame.key.get_pressed()
         if pressed_keys[pygame.K_p]:
-            print('You Pressed A Key!')
+            sel_line += 1
 
+        if sel_line >= max_line:
+            sel_line = 0
+        
         if today_time != today_last_time:
             today_last_time = today_time
             with canvas(device) as draw:
                 now = datetime.datetime.now()
-                today_date = now.strftime("%d %b %y")
+                #today_date = now.strftime("%d %b %y")
+                line = 0
 
-                margin = 4
+                cx = 0
+                cxr = 256
+                cy = 0
+                lh = 11 # line height
 
-                cx = 30
-                cy = min(device.height, 64) / 2
+                draw.rectangle((cx, cy, cxr, cy + lh*(sel_line+1)-1), outline="white", fill="white")
+                draw.rectangle((cx, cy, cxr, cy + lh*(sel_line)-1), outline="black", fill="black") # Clean up previously selected line
 
-                left = cx - cy
-                right = cx + cy
+                draw.text((cx, cy + lh*line), "19:49 Augsburg Hbf", fill = "black" if line == sel_line else "white", font=font)
+                draw.text((cxr, cy + lh*line), "1    20:15", fill = "black" if line == sel_line else "white", font=font, anchor="rt")
 
-                hrs_angle = 270 + (30 * (now.hour + (now.minute / 60.0)))
-                hrs = posn(hrs_angle, cy - margin - 7)
+                line += 1
+                draw.text((cx, cy + lh*line), "20:10 Landsberg (Lech)", fill = "black" if line == sel_line else "white", font=font)
+                draw.text((cxr, cy + lh*line), "2   20:20", fill = "black" if line == sel_line else "white", font=font, anchor="rt")
 
-                min_angle = 270 + (6 * now.minute)
-                mins = posn(min_angle, cy - margin - 2)
+                line += 1
+                draw.text((cx, cy + lh*line), "20:20 Augsburg Hbf", fill = "black" if line == sel_line else "white", font=font)
+                draw.text((cxr, cy + lh*line), "1   20:25", fill = "black" if line == sel_line else "white", font=font, anchor="rt")
 
-                sec_angle = 270 + (6 * now.second)
-                secs = posn(sec_angle, cy - margin - 2)
-
-                draw.ellipse((left + margin, margin, right - margin, min(device.height, 64) - margin), outline="white")
-                draw.line((cx, cy, cx + hrs[0], cy + hrs[1]), fill="white")
-                draw.line((cx, cy, cx + mins[0], cy + mins[1]), fill="white")
-                draw.line((cx, cy, cx + secs[0], cy + secs[1]), fill="red")
-                draw.ellipse((cx - 2, cy - 2, cx + 2, cy + 2), fill="white", outline="white")
-                draw.text((2 * (cx + margin), cy - 8), today_date, fill="yellow", font=font)
-                draw.text((2 * (cx + margin), cy), today_time, fill="yellow", font=font)
+                line += 1
+                draw.text((cx, cy + lh*line), "20:40 Landsberg (Lech)", fill = "black" if line == sel_line else "white", font=font)
+                draw.text((cxr, cy + lh*line), "2   20:40", fill = "black" if line == sel_line else "white", font=font, anchor="rt")
 
         time.sleep(0.1)
 
